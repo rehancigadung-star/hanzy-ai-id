@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chat AI HP Friendly</title>
+<style>
+body { font-family: Arial; padding: 20px; }
+input { padding: 5px; width: 300px; margin-right: 5px; }
+button { padding: 5px 10px; }
+p { margin-top: 10px; font-weight: bold; }
+#chatBox { max-height: 400px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; margin-top: 10px; }
+.user { color: blue; margin-bottom: 5px; }
+.ai { color: green; margin-bottom: 5px; }
+</style>
+</head>
+<body>
+<h1>Chat AI HP Friendly</h1>
+<input type="text" id="userInput" placeholder="Tanya apa saja...">
+<button id="sendBtn">Kirim</button>
+
+<div id="chatBox"></div>
+
+<script>
+const sendBtn = document.getElementById("sendBtn");
+const userInput = document.getElementById("userInput");
+const chatBox = document.getElementById("chatBox");
+
+sendBtn.addEventListener("click", async () => {
+  const question = userInput.value.trim();
+  if(!question) return;
+
+  const userP = document.createElement("p");
+  userP.className = "user";
+  userP.textContent = "Kamu: " + question;
+  chatBox.appendChild(userP);
+  userInput.value = "";
+
+  const aiP = document.createElement("p");
+  aiP.className = "ai";
+  aiP.textContent = "AI: Sedang memproses...";
+  chatBox.appendChild(aiP);
+  chatBox.scrollTop = chatBox.scrollHeight;
+
+  try {
+    const res = await fetch("https://api.openai-proxy.rehanfree.vercel.app/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prompt: question })
+    });
+
+    const data = await res.json();
+    aiP.textContent = "AI: " + data.answer;
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+  } catch (err) {
+    aiP.textContent = "AI: Terjadi kesalahan, coba lagi.";
+    console.error(err);
+  }
+});
+</script>
+</body>
+</html>
